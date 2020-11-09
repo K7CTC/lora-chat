@@ -9,6 +9,7 @@
 ########################################################################
 
 import datetime
+import os
 import sqlite3
 import sys
 import time
@@ -37,6 +38,11 @@ if my_node_id < 1 or my_node_id > 99:
     sys.exit(1)
 
 rowid_marker = 0
+
+if sys.platform == 'win32':
+    os.system('cls')
+else:
+    os.system('clear')
 
 db = sqlite3.connect('lora_chat.db')
 c = db.cursor()
