@@ -1,2 +1,2 @@
 # lora-chat
-Experimental LoRa Mesh Messenger
+Experimental LoRa SMS (Short Message Service)
