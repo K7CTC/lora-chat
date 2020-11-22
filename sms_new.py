@@ -11,6 +11,8 @@
 #                                                                      #
 ########################################################################
 
+import lc
+
 import argparse
 import os
 import re
@@ -34,7 +36,7 @@ parser.add_argument('-m', '--message', nargs='?', default=None,
                     help='message of up to 50 characters in length to be queued for transmission')
 args = parser.parse_args()
 
-if Path('lora_chat.db').is_file() == False:
+if lc.database_exists() == False:
     print('ERROR: File not found - lora_chat.db')
     sys.exit(1)
 
