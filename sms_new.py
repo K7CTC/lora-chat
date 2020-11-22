@@ -11,7 +11,7 @@
 #                                                                      #
 ########################################################################
 
-import lc
+import lcdb
 
 import argparse
 import os
@@ -21,7 +21,6 @@ import sys
 import time
 from pathlib import Path
 
-my_node_id = None
 my_node_name = None
 
 #establish and parse command line arguments
@@ -36,9 +35,23 @@ parser.add_argument('-m', '--message', nargs='?', default=None,
                     help='message of up to 50 characters in length to be queued for transmission')
 args = parser.parse_args()
 
-if lc.database_exists() == False:
+if lcdb.exists() == False:
     print('ERROR: File not found - lora_chat.db')
     sys.exit(1)
+
+my_node_id = lcdb.my_node_id()
+
+if my_node_id == None:
+    print('ERROR: Unable to set node ID for this node!')
+    sys.exit(1)
+
+#my_node_name = lcdb.my_node_name()
+
+print()       
+print(f'My node ID is: {my_node_id}')
+#print(f'My node name is: {my_node_name}')
+print()
+      
 
 if Path('lora_chat.conf').is_file() == False:
     print('ERROR: File not found - lora_chat.conf')
