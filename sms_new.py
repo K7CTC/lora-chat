@@ -2,7 +2,7 @@
 #                                                                      #
 #          NAME:  LoRa Chat - New SMS                                  #
 #  DEVELOPED BY:  Chris Clement (K7CTC)                                #
-#       VERSION:  v0.8                                                 #
+#       VERSION:  v0.9                                                 #
 #   DESCRIPTION:  This module reads lora_chat.conf to obtain the node  #
 #                 identifier and validates a user provided message of  #
 #                 up to 50 characters. An SMS packet type identifier   #
@@ -11,8 +11,11 @@
 #                                                                      #
 ########################################################################
 
+#import from project library
+import lc
 import lcdb
 
+#import from standard library
 import argparse
 import os
 import re
@@ -20,8 +23,6 @@ import sqlite3
 import sys
 import time
 from pathlib import Path
-
-my_node_name = None
 
 #establish and parse command line arguments
 parser = argparse.ArgumentParser(description='LoRa Chat - New SMS',
@@ -40,53 +41,11 @@ if lcdb.exists() == False:
     sys.exit(1)
 
 my_node_id = lcdb.my_node_id()
-
 if my_node_id == None:
     print('ERROR: Unable to set node ID for this node!')
     sys.exit(1)
 
-#my_node_name = lcdb.my_node_name()
-
-print()       
-print(f'My node ID is: {my_node_id}')
-#print(f'My node name is: {my_node_name}')
-print()
-      
-
-if Path('lora_chat.conf').is_file() == False:
-    print('ERROR: File not found - lora_chat.conf')
-    sys.exit(1)
-
-#attempt to read and validate the node id integer from lora_chat.conf
-try:
-    file = open('lora_chat.conf')
-    my_node_id = int(file.readline())
-    file.close()
-except:
-    print('ERROR: Failed to read node identifier from lora_chat.conf!')
-    sys.exit(1)
-if my_node_id < 1 or my_node_id > 99:
-    print('ERROR: Node identifier out of range!')
-    sys.exit(1)
-
-#use node id to obtain corresponding node name from the database
-try:
-    db = sqlite3.connect('lora_chat.db')
-    c = db.cursor()
-    c.execute('SELECT node_name FROM nodes WHERE node_id=?',(my_node_id,))
-    query_result = c.fetchone()
-    if query_result:
-        my_node_name = query_result[0]
-    else:
-        print('ERROR: Invalid node identifier!')
-        c.close()
-        db.close()
-        sys.exit(1)
-except:
-    print('ERROR: Unable to connect to lora_chat.db') 
-    c.close()
-    db.close()
-    sys.exit(1)
+my_node_name = lcdb.my_node_name(my_node_id)
 
 #function: message validation, returns boolean
 def validate_message(message_to_be_validated):
