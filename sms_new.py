@@ -17,12 +17,9 @@ import lcdb
 
 #import from standard library
 import argparse
-import os
 import re
-import sqlite3
 import sys
 import time
-from pathlib import Path
 
 #establish and parse command line arguments
 parser = argparse.ArgumentParser(description='LoRa Chat - New SMS',
@@ -54,38 +51,6 @@ def validate_message(message_to_be_validated):
         return True
     else:
         return False
-
-# #function: insert message into database, returns boolean  
-# def database_entry(message):
-#     #compose raw packet to be sent over the air
-#     payload_raw = str(1) + ',' + str(my_node_id) + ',' + message
-#     #compose hex encoded version of raw packet to be sent over the air
-#     payload_hex = payload_raw.encode('UTF-8').hex()
-#     #attempt database entry
-#     try:
-#         db = sqlite3.connect('lora_chat.db')
-#         c = db.cursor()
-#         #enable foreign key constraints
-#         c.execute('PRAGMA foreign_keys = ON')
-#         time_queued = int(round(time.time()*1000))
-#         c.execute('''
-#             INSERT INTO sms (
-#                 node_id,
-#                 message,
-#                 payload_raw,
-#                 payload_hex,
-#                 time_queued)
-#             VALUES (?, ?, ?, ?, ?);''',
-#             (my_node_id, message, payload_raw, payload_hex, time_queued))
-#     except:
-#         c.close()
-#         db.close()
-#         return False
-#     else:
-#         db.commit()
-#         c.close()
-#         db.close()
-#         return True
 
 #if message provided via command line is valid then insert into database
 if args.message != None:
