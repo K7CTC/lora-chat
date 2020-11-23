@@ -2,7 +2,7 @@
 #                                                                      #
 #          NAME:  LoRa Chat - Clear SMS Table                          #
 #  DEVELOPED BY:  Chris Clement (K7CTC)                                #
-#       VERSION:  v0.8                                                 #
+#       VERSION:  v1.0                                                 #
 #   DESCRIPTION:  This module simply drops and recreates the sms       #
 #                 table from lora_chat.db thus purging chat history.   #
 #                                                                      #
@@ -15,6 +15,7 @@ from pathlib import Path
 if Path('lora_chat.db').is_file():
     try:
         db = sqlite3.connect('lora_chat.db')
+        db.execute('PRAGMA foreign_keys = ON')
         db.execute('DROP TABLE IF EXISTS sms')
         db.commit()
         db.execute('''
