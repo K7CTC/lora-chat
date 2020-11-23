@@ -1,6 +1,6 @@
 ########################################################################
 #                                                                      #
-#          NAME:  LoRa Chat - Functions                                #
+#          NAME:  LoRa Chat - Shared Project Functions                 #
 #  DEVELOPED BY:  Chris Clement (K7CTC)                                #
 #       VERSION:  v0.25                                                #
 #   DESCRIPTION:  This module contains functions for LoRa Chat and is  #

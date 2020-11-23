@@ -35,6 +35,7 @@ def exists():
         return False
     try:
         db = sqlite3.connect('lora_chat.db')
+        db.execute('PRAGMA foreign_keys = ON')
         db.execute('''
             CREATE TABLE IF NOT EXISTS nodes (
                 node_id	                        INTEGER NOT NULL UNIQUE,
@@ -80,6 +81,7 @@ def exists():
 # returns: row count as integer
 def nodes_row_count():
     db = sqlite3.connect('lora_chat.db')
+    db.execute('PRAGMA foreign_keys = ON')
     row_count = db.execute('SELECT COUNT(*) FROM nodes').fetchone()[0]
     db.close()
     return row_count    
@@ -91,6 +93,7 @@ def my_node_id():
     max_node_id = nodes_row_count()
     db = sqlite3.connect('lora_chat.db')
     c = db.cursor()
+    c.execute('PRAGMA foreign_keys = ON')
     c.execute('SELECT node_id FROM nodes WHERE my_node = "True"')
     my_node_id = c.fetchone()
     if my_node_id:
@@ -98,7 +101,7 @@ def my_node_id():
         db.close()
         return my_node_id[0]
     lc.clear_terminal()
-    print('┌─┤Set My Node ID├─────────────────────────────────────────────────┐')
+    print('┌─┤LoRa Chat - Set My Node ID├─────────────────────────────────────┐')
     print('│ Please select node identifier from the following list:           │')
     c.execute('''
         SELECT
@@ -116,6 +119,8 @@ def my_node_id():
         right_margin = right_margin + '│'
         print(f'{left_margin}{node_id} - {node_name}{right_margin}')
     print('└──────────────────────────────────────────────────────────────────┘')
+    print(f'Press CTRL+C to quit.')
+    print()
     my_node_id = input('My Node ID (1-' + str(max_node_id) + '): ')
     try:
         my_node_id = int(my_node_id)
@@ -129,15 +134,22 @@ def my_node_id():
         c.close()
         db.close()
         return None
-    c.execute('''
-        UPDATE
-            nodes
-        SET
-            my_node=?
-        WHERE
-            node_id=?;''',
-        ("True", my_node_id))
-    db.commit()
+    try:    
+        c.execute('''
+            UPDATE
+                nodes
+            SET
+                my_node=?
+            WHERE
+                node_id=?;''',
+            ("True", my_node_id))
+    except:
+        c.close()
+        db.close()
+        print('ERROR: Unable to update my_node value in lora_chat.db!')
+        return None
+    else:
+        db.commit()
     c.execute('SELECT node_id FROM nodes WHERE my_node = "True"')
     my_node_id = c.fetchone()
     c.close()
@@ -152,6 +164,7 @@ def my_node_id():
 def my_node_name(my_node_id):
     db = sqlite3.connect('lora_chat.db')
     c = db.cursor()
+    c.execute('PRAGMA foreign_keys = ON')
     c.execute('SELECT node_name FROM nodes WHERE node_id=?',(my_node_id,))
     my_node_name = c.fetchone()
     c.close()
@@ -169,8 +182,7 @@ def outbound_message(my_node_id,message):
     try:
         db = sqlite3.connect('lora_chat.db')
         c = db.cursor()
-        #enable foreign key constraints
-        #c.execute('PRAGMA foreign_keys = ON')
+        c.execute('PRAGMA foreign_keys = ON')
         time_queued = int(round(time.time()*1000))
         c.execute('''
             INSERT INTO sms (
@@ -190,6 +202,8 @@ def outbound_message(my_node_id,message):
         c.close()
         db.close()
         return True
+    return False
+    
 
 
 
