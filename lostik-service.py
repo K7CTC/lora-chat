@@ -16,6 +16,7 @@ import lcdb
 
 #import from standard library
 import argparse
+import atexit
 import datetime
 import logging
 import sqlite3
