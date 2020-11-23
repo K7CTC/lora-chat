@@ -14,11 +14,9 @@ import lcdb
 
 #import from standard library
 import datetime
-import os
 import sqlite3
 import sys
 import time
-from pathlib import Path
 
 if lcdb.exists() == False:
     print('ERROR: File not found - lora_chat.db')
