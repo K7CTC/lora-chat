@@ -8,6 +8,7 @@
 #                                                                      #
 ########################################################################
 
+#import from standard library
 import sqlite3
 import sys
 from pathlib import Path

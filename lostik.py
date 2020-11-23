@@ -1,23 +1,26 @@
 ########################################################################
 #                                                                      #
-#          NAME:  LoRa Chat - LoStik Interface                         #
+#          NAME:  LoRa Chat - LoStik Service                           #
 #  DEVELOPED BY:  Chris Clement (K7CTC)                                #
 #       VERSION:  v0.8                                                 #
 #                                                                      #
 ########################################################################
 
-import argparse
-import atexit
-import datetime
-import logging
-import os
+#import from required 3rd party libraries
 import serial
 import serial.tools.list_ports
+
+#import from project library
+import lc
+import lcdb
+
+#import from standard library
+import argparse
+import datetime
+import logging
 import sqlite3
-import subprocess
 import sys
 import time
-from pathlib import Path
 
 logging.basicConfig(filename='lostik.log',
                     format='%(asctime)s %(levelname)s: %(message)s',
@@ -54,13 +57,13 @@ logging.info('------------------------------------------------------------------
 logging.info('lostik.py %s started', version)
 
 #verify existence of lora_chat.db before proceeding
-if Path('lora_chat.db').is_file() == True:
-    logging.info('File found - lora_chat.db')
-else:
+if lcdb.exists() == False:
     print('ERROR: File not found - lora_chat.db')
     logging.error('File not found - lora_chat.db')
     sys.exit(1)
-
+else:
+    logging.info('File found - lora_chat.db') 
+    
 #establish database connection
 db = None
 c = None
@@ -143,7 +146,6 @@ except:
     sys.exit(1)
 else:
     logging.info('LoStik port opened.')    
-    #Path('lostik.lock').touch()
 del(lostik_port)
 
 #check LoStik firmware version
@@ -444,13 +446,6 @@ def incremental_print(text):
     sys.stdout.write(str(text))
     sys.stdout.flush()
 
-#function: clear terminal
-def clear_terminal():
-    if sys.platform == 'win32':
-        os.system('cls')
-    else:
-        os.system('clear')
-
 ########################################################################
 # LoStik Notes:  The Ronoth LoStik rx/tx state is manually controlled  #
 #                which means that we must juggle inbound and outbound  #
@@ -516,7 +511,7 @@ if len(wdt) == 9:
 def lostik_static_ui(status):      
     now = datetime.datetime.now()
     time = now.strftime('%I:%M:%S %p')
-    clear_terminal()
+    lc.clear_terminal()
     print(f'╔══════════════════╡LoRa Chat LoStik Service {version}╞═════════════════╗')
     print(f'║ Frequency: {freq} │ Bandwidth: {bw} │ TX Power: {pwr}  ║')
     print(f'╟────────────────────────┴────────────────────┴────────────────────╢')
