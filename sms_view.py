@@ -2,12 +2,17 @@
 #                                                                      #
 #          NAME:  LoRa Chat - View SMS                                 #
 #  DEVELOPED BY:  Chris Clement (K7CTC)                                #
-#       VERSION:  v0.8                                                 #
+#       VERSION:  v1.0                                                 #
 #   DESCRIPTION:  This module reads the sms table from lora_chat.db    #
 #                 and prints the output to the console.                #
 #                                                                      #
 ########################################################################
 
+#import from project library
+import lc
+import lcdb
+
+#import from standard library
 import datetime
 import os
 import sqlite3
@@ -15,37 +20,24 @@ import sys
 import time
 from pathlib import Path
 
-my_node_id = None
-
-if Path('lora_chat.db').is_file() == False:
+if lcdb.exists() == False:
     print('ERROR: File not found - lora_chat.db')
     sys.exit(1)
 
-if Path('lora_chat.conf').is_file() == False:
-    print('ERROR: File not found - lora_chat.conf')
+my_node_id = lcdb.my_node_id()
+if my_node_id == None:
+    print('ERROR: Unable to set node ID for this node!')
     sys.exit(1)
 
-#attempt to read and validate the node id integer from lora_chat.conf
-try:
-    file = open('lora_chat.conf')
-    my_node_id = int(file.readline())
-    file.close()
-except:
-    print('ERROR: Failed to read node identifier from lora_chat.conf!')
-    sys.exit(1)
-if my_node_id < 1 or my_node_id > 99:
-    print('ERROR: Node identifier out of range!')
-    sys.exit(1)
+my_node_name = lcdb.my_node_name(my_node_id)
 
 rowid_marker = 0
 
-if sys.platform == 'win32':
-    os.system('cls')
-else:
-    os.system('clear')
+lc.clear_terminal()
 
 db = sqlite3.connect('lora_chat.db')
 c = db.cursor()
+c.execute('PRAGMA foreign_keys = ON')
 while True:
     try:    
         #get all rows with rowid greater than rowid_marker

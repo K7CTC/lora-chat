@@ -5,7 +5,7 @@
 #       VERSION:  v0.25                                                #
 #   DESCRIPTION:  This module contains database functions for LoRa     #
 #                 Chat and is only intended for import into other      #
-#                 project modules.  Not to be executed directly!       #
+#                 project modules. Not to be executed directly!        #
 #                                                                      #
 ########################################################################
 

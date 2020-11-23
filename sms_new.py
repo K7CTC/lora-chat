@@ -3,8 +3,7 @@
 #          NAME:  LoRa Chat - New SMS                                  #
 #  DEVELOPED BY:  Chris Clement (K7CTC)                                #
 #       VERSION:  v1.0                                                 #
-#   DESCRIPTION:  This module reads lora_chat.conf to obtain the node  #
-#                 identifier and validates a user provided message of  #
+#   DESCRIPTION:  This module validates a user provided message of     #
 #                 up to 50 characters. An SMS packet type identifier   #
 #                 is appended and the resulting data is inserted into  #
 #                 a new row within the sms table of lora_chat.db.      #
@@ -23,15 +22,11 @@ import time
 
 #establish and parse command line arguments
 parser = argparse.ArgumentParser(description='LoRa Chat - New SMS',
-                                 epilog='Created by K7CTC. This module reads lora_chat.conf to '
-                                        'obtain the node identifier and validates a user provided '
-                                        'message of up to 50 characters. An SMS packet type '
-                                        'identifier is appended and the resulting data is '
-                                        'inserted into a new row within the sms table of '
-                                        'lora_chat.db.')
+                                 epilog='Created by K7CTC. This module validates a user provided message of up to 50 '
+                                        'characters. An SMS packet type identifier is appended and the resulting data '
+                                        'is inserted into a new row within the sms table of lora_chat.db.')
 parser.add_argument('-m', '--message', nargs='?', default=None,
                     help='message of up to 50 characters in length to be queued for transmission')
-args = parser.parse_args()
 
 if lcdb.exists() == False:
     print('ERROR: File not found - lora_chat.db')
@@ -41,6 +36,8 @@ my_node_id = lcdb.my_node_id()
 if my_node_id == None:
     print('ERROR: Unable to set node ID for this node!')
     sys.exit(1)
+
+args = parser.parse_args()
 
 my_node_name = lcdb.my_node_name(my_node_id)
 
