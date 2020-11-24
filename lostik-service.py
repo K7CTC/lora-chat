@@ -2,7 +2,7 @@
 #                                                                      #
 #          NAME:  LoRa Chat - LoStik Service                           #
 #  DEVELOPED BY:  Chris Clement (K7CTC)                                #
-#       VERSION:  v0.9                                                 #
+#       VERSION:  v1.0                                                 #
 #                                                                      #
 ########################################################################
 
@@ -11,7 +11,6 @@ import serial
 import serial.tools.list_ports
 
 #import from project library
-import lc
 import lcdb
 
 #import from standard library
@@ -19,6 +18,7 @@ import argparse
 import atexit
 import datetime
 import logging
+import os
 import sqlite3
 import sys
 import time
@@ -62,7 +62,7 @@ elif args.pwr == 'high':
 args.wdt = args.wdt * 1000
 
 #global variables
-version = 'v0.9'
+version = 'v1.0'
 
 #start logger
 logging.info('-------------------------------------------------------------------------------')
@@ -511,7 +511,7 @@ if len(wdt) == 9:
 def lostik_static_ui(status):      
     now = datetime.datetime.now()
     time = now.strftime('%I:%M:%S %p')
-    lc.clear_terminal()
+    os.system('cls' if os.name == 'nt' else 'clear')
     print(f'╔══════════════════╡LoRa Chat LoStik Service {version}╞═════════════════╗')
     print(f'║ Frequency: {freq} │ Bandwidth: {bw} │ TX Power: {pwr}  ║')
     print(f'╟────────────────────────┴────────────────────┴────────────────────╢')

@@ -10,12 +10,12 @@
 #                                                                      #
 ########################################################################
 
-#import from project library
-import lc
+#import from project
 import lcdb
 
 #import from standard library
 import argparse
+import os
 import re
 import sys
 import time
@@ -67,7 +67,7 @@ if args.message != None:
 if args.message == None:
     while True:
         try:
-            lc.clear_terminal()
+            os.system('cls' if os.name == 'nt' else 'clear')
             print('┌─┤LoRa Chat - New SMS├────────────────────────────────────────────┐')
             print('│ Type a message between 1 and 50 characters then press enter.     │')
             print('│ Your message may only contain A-Z a-Z 0-9 and the following      │')

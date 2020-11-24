@@ -8,12 +8,12 @@
 #                                                                      #
 ########################################################################
 
-#import from project library
-import lc
+#import from project
 import lcdb
 
 #import from standard library
 import datetime
+import os
 import sqlite3
 import sys
 import time
@@ -31,7 +31,7 @@ my_node_name = lcdb.my_node_name(my_node_id)
 
 rowid_marker = 0
 
-lc.clear_terminal()
+os.system('cls' if os.name == 'nt' else 'clear')
 
 db = sqlite3.connect('lora_chat.db')
 c = db.cursor()
