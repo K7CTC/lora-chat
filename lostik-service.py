@@ -2,7 +2,7 @@
 #                                                                      #
 #          NAME:  LoRa Chat - LoStik Service                           #
 #  DEVELOPED BY:  Chris Clement (K7CTC)                                #
-#       VERSION:  v0.8                                                 #
+#       VERSION:  v0.9                                                 #
 #                                                                      #
 ########################################################################
 
@@ -23,18 +23,19 @@ import sqlite3
 import sys
 import time
 
+#establish logging
 logging.basicConfig(filename='lostik.log',
                     format='%(asctime)s %(levelname)s: %(message)s',
                     datefmt='%Y-%m-%d %I:%M:%S %p',
                     level=logging.INFO)
 
+#establish command line arguments
 parser = argparse.ArgumentParser(description='LoRa Chat - LoStik Service',
                                  epilog='Created by K7CTC.')
 parser.add_argument('--pwr',
-                    type=int,
-                    choices=(2,3,4,5,6,7,8,9,10,11,12,14,15,16,17,20),
-                    help='LoStik transmit power - default: 2',
-                    default='2')
+                    choices=['low','medium','high'],
+                    help='LoStik transmit power - default: low',
+                    default='low')
 parser.add_argument('--cr',
                     type=int,
                     choices=range(5, 9),
@@ -45,13 +46,23 @@ parser.add_argument('--wdt',
                     choices=range(5,31),
                     help='LoStik watchdog timer time-out in seconds - default: 8',
                     default='8')
+
+#parse command line arguments
 args = parser.parse_args()
+
+#convert pwr to actual power setting expected by LoStik before proceeding
+if args.pwr == 'low':
+    args.pwr = 6
+elif args.pwr =='medium':
+    args.pwr = 12
+elif args.pwr == 'high':
+    args.pwr = 20
 
 #convert wdt from seconds to milliseconds before proceeding
 args.wdt = args.wdt * 1000
 
 #global variables
-version = 'v0.8'
+version = 'v0.9'
 
 #start logger
 logging.info('-------------------------------------------------------------------------------')
@@ -76,6 +87,8 @@ except:
     print('ERROR: Unable to connect to lora_chat.db!')
     logging.error('Unable to connect to lora_chat.db!')
     sys.exit(1)
+else:
+    logging.info('Connected to lora_chat.db')
 
 #lostik PiERS network variables (all nodes must share the same settings)
 #Frequency (hardware default=923300000)
@@ -113,17 +126,16 @@ set_wdt = bytes(str(args.wdt), 'ASCII')
 
 ########################################################################
 # LoStik Notes:  The Ronoth LoStik USB to serial device has a VID:PID  #
-#                equal to 1A86:7523.  Using pySerial we are able to    #
+#                equal to 1A86:7523. Using pySerial we are able to     #
 #                query the system (Windows/Linux/macOS) to see if a    #
-#                device matching this VID:PID is attached via USB.  If #
+#                device matching this VID:PID is attached via USB. If  #
 #                a LoStik is detected, we can then assign its port     #
-#                programmatically.  This eliminates the need to        #
-#                guess the port or obtain it as a command line         #
-#                argument.  This only took several months to figure    #
-#                out.                                                  #
+#                programmatically.  This eliminates the need to guess  #
+#                the port or obtain it as a command line argument.     #
+#                This only took several months to figure out.          #
 ########################################################################
 
-#attempt LoStik detection, port assignment and connection
+#attempt LoStik detection, port assignment and connection.  exit on error
 lostik = None
 lostik_port = None
 ports = serial.tools.list_ports.grep('1A86:7523')
@@ -146,7 +158,7 @@ except:
     logging.info('Check port permissions. Current user must be member of "dialout" group.')
     sys.exit(1)
 else:
-    logging.info('LoStik port opened.')    
+    logging.info('LoStik port opened, device is connected.')    
 del(lostik_port)
 
 #check LoStik firmware version
@@ -462,21 +474,8 @@ def incremental_print(text):
 # returns: LoStik TX power in mw
 def pwr_to_mw(pwr):
     pwr_lookup_dict = {
-        '2':'2.0',
-        '3':'2.5',
-        '4':'3.2',
-        '5':'4.0',
         '6':'5.0',
-        '7':'6.3',
-        '8':'7.9',
-        '9':'10.0',
-        '10':'12.6',
-        '11':'15.8',
         '12':'20.0',
-        '14':'29.5',
-        '15':'35.5',
-        '16':'42.7',
-        '17':'50.1',
         '20':'70.8'
     }
     return pwr_lookup_dict[pwr]
