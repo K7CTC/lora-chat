@@ -48,7 +48,11 @@ One of the features of LoStik is referred to as the "Watchdog Timer Time-Out" (W
 
 LoRa Chat utilizes the aforementioned WDT as the timing mechanism for a TX/RX cycle or "loop".  The default WDT value for this project is 8 seconds but this can be configuraed for anywhere between 5 and 30 seconds.  The longest message transmit time is roughly 3.5 seconds so we are not concerned with the WDT on transmit, only on receive.  If a message is received or if the WDT is triggered, LoRa chat processes it accordingly then checks for outgoing messages.  Should an outgoing message exist, it is sent and the process repeats.
 
-## Proect File Descriptions
+## Known Limitations
+
+Since we rely on the WDT or received packets to control the timing of the TX/RX cycle it is possible that a "collision" can occur.  This can happen when multiple nodes transmit at the same time or if a node drops out of its receive state while a message is in the process of being transmitted by another node.  LoRa Chat is experimental and not indended for reliable message delivery.  In testing, a WDT value of eight seconds seemed to strike the right balance of reliability and speed.  Just know that even in ideal RF conditions, it is possible for a message to get clobbered.
+
+## Project File Descriptions
 
 ### lcdb.py
 
