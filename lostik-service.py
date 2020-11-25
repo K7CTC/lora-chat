@@ -304,6 +304,9 @@ else:
     logging.error('Failed to set LoStik watchdog timer time-out to ' + set_wdt.decode('UTF-8') + '!')
     sys.exit(1)
 
+#pause three quarters of a second for effect
+time.sleep(.75)
+
 #turn off both LEDs to indicate we have exited "initialization" mode
 lostik_led_control('rx', 'off')
 lostik_led_control('tx', 'off')
@@ -318,20 +321,22 @@ def lostik_rx_control(state): #state values are 'on' or 'off'
         #place LoStik in continuous receive mode
         lostik.write(b'radio rx 0\r\n')
         if lostik.readline().decode('ASCII').rstrip() == 'ok':
-            if lostik_led_control('rx', 'on'):
-                return True
-            else:
-                return False
+            return True
+            # if lostik_led_control('rx', 'on'):
+            #     return True
+            # else:
+            #     return False
         else:
             return False
     elif state == 'off':
         #halt LoStik continuous receive mode
         lostik.write(b'radio rxstop\r\n')
         if lostik.readline().decode('ASCII').rstrip() == 'ok':
-            if lostik_led_control('rx', 'off'):
-                return True
-            else:
-                return False
+            return True
+            # if lostik_led_control('rx', 'off'):
+            #     return True
+            # else:
+            #     return False
         else:
             return False
 

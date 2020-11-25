@@ -1,29 +1,61 @@
 # LoRa Chat
 
-LoRa Chat is an experimental SMS (Short Message Service) application that utilizes the LoRa modulation scheme to send and receive undirected messages of 50 characters or less.  The application is 100% scratch built in Python 3 and is writted to be cross-platform.  LoRa Chat has been tested on macOS Big Sur, Windows 10 as well as Raspberry Pi OS.  All modules have been tested with Python v3.7.3 and Python v3.9.  
+LoRa Chat is an experimental SMS (Short Message Service) application that utilizes the LoRa RF modulation scheme to send and receive undirected messages of 50 characters or less.  The application is 100% scratch built in Python 3 and is cross-platform.  LoRa Chat has been tested on macOS Big Sur, Windows 10 as well as Raspberry Pi OS.  All modules have been tested with Python v3.7.3 and Python v3.9.  
 
 ## Required Hardware
 
 * [Ronoth LoStik](https://ronoth.com/products/lostik)
 
+### Ronoth LoStik
+
+The Ronoth LoStik is a LoRa/LoRaWAN transceiver capable of transmitting up to 70.8mW.  It features an SMA antenna port and a USB 2.0 host interface.  The LoStik presents itself to the host as a simple serial UART via an internal USB to serial (RS-232) bridge.  Communication with the LoStik is performed over a serial connection using simple ASCII commands.
+
+Ronoth ships the LoStik with a 915MHz stubby antenna, the kind you expect to see with a device of this type.  The included antenna is more than adequate for testing aroung the house or even in the yard.  I have invested in and exerimented with two additional antenna types.  One is a simple PCB dipole antenna and the other is a commercial base station antenna.  As we know, the antenna is basically the "other half" of the transciever.  A proper antenna setup can have a dramatic impact on transmit and receive performance.
+
 ## Recommended Hardware
 
-* [915Mhz Dipole Antenna](https://lowpowerlab.com/shop/product/193)
-* [915Mhz Base Antenna](https://diamondantenna.net/bc920.html)
+* [915MHz Dipole Antenna](https://lowpowerlab.com/shop/product/193)
+* [915MHz Base Antenna](https://diamondantenna.net/bc920.html)
 
-## Required Software
+## Software Dependencies
 
 * [Python 3](https://www.python.org/downloads/)
 * [pySerial](https://pyserial.readthedocs.io/en/latest/pyserial.html#installation)
+
+## Compatibility
+
+LoRa Chat has been tested with Python v3.7.3 as well as Python v3.9.  At the time of this writing Python v3.9 is the current stable release and Python v3.7.3 is shipped with Raspberry Pi OS v2020-08-20.  The lostik-service module requires pySerial v3.5 (current version).  Previous versions of pySerial (v3.4) do not support macOS Big Sur.  A US variant (915MHz) Ronoth LoStik is also required and can be acquired directly from Ronoth or via Amazon for less than $50 each.  LoRa has been tested with macOS Big Sur v11.0.1, Windows 10 20H2 and Raspberry Pi OS v2020-08-20.
+
+## Concepts
+
+### Node ID
+
+The node identifier is an integer between 1 and 99 that serves as the primary form of identification for sent and received messages.  A more friendly node name is paired with the node identifier within the user interface.
+
+### Ronoth LoStik "Plug-n-Play"
+
+As we have learned, the LoStik is a "USB to Serial" device.  As such, the device is already plug-n-play with most modern operating systems.  However, the LoRa Chat application still needs to communicate with the hardware device.  This means we must know the details of the serial (COM) port to which the LoStik is attached.
+
+LoRa Chat accomplishes this by detecting the host operating system.  Then it numerates the serial ports of the host system.  Next a query of the hardware identifier for connected devices is performed.  If a LoStik match is found, LoRa Chat will attempt a connection.  Once a connection is established, for additional guarantee, the firmware version of the LoStik is read and compared against a check.
+
+This concept was likely the most difficult to implement and took four code iterations.  The benefit from all of this work is that the user need not concern themselves with which USB port the LoStik is attached to.  The user also does not need to manually specify a port identifier, baud rate, etc.  All of this happens transparently for the user.  It just works (or doesn't if the LoStik isn't attached).
+
+### Ronoth LoStik Watchdog Timer Time-Out
+
+One of the features of LoStik is referred to as the "Watchdog Timer Time-Out" (WDT).  When enabled, this prevents the device from getting stuck in a transmit or a receive state for longer than the duration specified.  In LoRa Chat, the default state of the LoStik is "idle", neither transmitting or receiving.  When the LoStik is placed in a transmit or receive state, the WDT kicks in.  When the allotted time is reached (in milliseconds) the device will drop back to an idle state while raising an error.
+
+### TX/RX "Cycle"
+
+LoRa Chat utilizes the aforementioned WDT as the timing mechanism for a TX/RX cycle or "loop".  The default WDT value for this project is 8 seconds but this can be configuraed for anywhere between 5 and 30 seconds.  The longest message transmit time is roughly 3.5 seconds so we are not concerned with the WDT on transmit, only on receive.  If a message is received or if the WDT is triggered, LoRa chat processes it accordingly then checks for outgoing messages.  Should an outgoing message exist, it is sent and the process repeats.
 
 ## Proect File Descriptions
 
 ### lcdb.py
 
-This module contains functions that can be called against lora_chat.db, the database that stores all application data.  These functions provide the following utility to other modules in the application:
+This module contains functions for interacting with lora_chat.db, the database that stores all application data.  It is not intended for direct execution but rather import into other application modules.  The functions of lcdb.py provide the following utility to other modules in the application:
 
 * Check to see if lora_chat.db exists and create a new lora_chat.db if it doesn't.
-  * If lora_chat.db does not exist, user will be prompted to specify their node identifier upon database creation.
+  * Upon database creation, the user is prompted to select a node identifier.
 * Obtain the number of nodes recognized by te application.
 * Obtain the node identifer of the current (your) node.
 * Obtain the node name of the current (your) node.
