@@ -2,6 +2,8 @@
 
 LoRa Chat is an experimental SMS (Short Message Service) application that utilizes the LoRa RF modulation scheme to send and receive undirected messages of 50 characters or less.  The application is 100% scratch built in Python 3 and is cross-platform.  LoRa Chat has been tested on macOS Big Sur, Windows 10 as well as Raspberry Pi OS.  All modules have been tested with Python v3.7.3 and Python v3.9.  
 
+LoRa Chat is also my first Python project and has served as a motivating factor for learning the language.
+
 ## Required Hardware
 
 * [Ronoth LoStik](https://ronoth.com/products/lostik)
@@ -24,7 +26,7 @@ Ronoth ships the LoStik with a 915MHz stubby antenna, the kind you expect to see
 
 ## Compatibility
 
-LoRa Chat has been tested with Python v3.7.3 as well as Python v3.9.  At the time of this writing Python v3.9 is the current stable release and Python v3.7.3 is shipped with Raspberry Pi OS v2020-08-20.  The lostik-service module requires pySerial v3.5 (current version).  Previous versions of pySerial (v3.4) do not support macOS Big Sur.  A US variant (915MHz) Ronoth LoStik is also required and can be acquired directly from Ronoth or via Amazon for less than $50 each.  LoRa has been tested with macOS Big Sur v11.0.1, Windows 10 20H2 and Raspberry Pi OS v2020-08-20.
+LoRa Chat has been tested with Python v3.7.3 as well as Python v3.9.  At the time of this writing Python v3.9 is the current stable release and Python v3.7.3 is shipped with Raspberry Pi OS v2020-08-20.  The lostik-service module requires pySerial v3.5 (current version).  Previous versions of pySerial (v3.4) do not support macOS Big Sur.  A US variant (915MHz) Ronoth LoStik is also required and can be acquired directly from Ronoth or via Amazon for less than $50 each.  LoRa Chat has been tested with macOS Big Sur v11.0.1, Windows 10 20H2 and Raspberry Pi OS v2020-08-20.
 
 ## Concepts
 
@@ -34,9 +36,9 @@ The node identifier is an integer between 1 and 99 that serves as the primary fo
 
 ### Ronoth LoStik "Plug-n-Play"
 
-As we have learned, the LoStik is a "USB to Serial" device.  As such, the device is already plug-n-play with most modern operating systems.  However, the LoRa Chat application still needs to communicate with the hardware device.  This means we must know the details of the serial (COM) port to which the LoStik is attached.
+As we have learned, the LoStik is a "USB to Serial" device.  As such, the device is already plug-n-play with most modern operating systems.  However, the LoRa Chat application still needs to connect and communicate with the hardware device once attached to the host.  This means we must know the details of the serial (COM) port to which the LoStik is attached.
 
-LoRa Chat accomplishes this by detecting the host operating system.  Then it numerates the serial ports of the host system.  Next a query of the hardware identifier for connected devices is performed.  If a LoStik match is found, LoRa Chat will attempt a connection.  Once a connection is established, for additional guarantee, the firmware version of the LoStik is read and compared against a check.
+LoRa Chat accomplishes this by detecting the host operating system.  Then it enumerates the serial ports of the host system.  Next a query of the hardware identifier for connected devices is performed.  If a LoStik match is found, LoRa Chat will attempt a connection.  Once a connection is established, for additional guarantee, the firmware version of the LoStik is read and compared against a check.
 
 This concept was likely the most difficult to implement and took four code iterations.  The benefit from all of this work is that the user need not concern themselves with which USB port the LoStik is attached to.  The user also does not need to manually specify a port identifier, baud rate, etc.  All of this happens transparently for the user.  It just works (or doesn't if the LoStik isn't attached).
 
@@ -107,6 +109,10 @@ To send a message, simply type a message in SMS New.  Your message will be queue
 SMS View checks for changes in the database once per second.  When an outgoing message had been sent or an incoming message has been received, it is formatted and displayed in a "chat" style interface with all pertinent details.
 
 The LoStik Service runs in an infinite loop based on the hardware Watchdog Timer Time-Out on the LoStik or receipt of a message from another node.  The default is 8 seconds, meaning that if nothing is received within 8 seconds, the device drops out of its receive state and returns to idle.  The same is true for transmit.  A transmission longer than 8 seconds will cause the device to drop out of the transmit state and return to idle (with an error).  Upon successful message receipt the application will store the message in the database and check for the next outgoing message.  If a message is found it is sent.
+
+## Normal Operation
+
+Simply leave all three programs running in their terminal windows.  Newly received messages will automatically appear within SMS View.  Outgoing messages will not appear in SMS View until they are successfully transmitted.  The application runs in an infinite loop and is considered stable.  Data is saved to the database "on the fly" so even if execution is halted...  The chat history and selected station identifier remain.
 
 ## Developed By
 
