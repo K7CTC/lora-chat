@@ -114,6 +114,8 @@ The LoStik Service runs in an infinite loop based on the hardware Watchdog Timer
 
 Simply leave all three programs running in their terminal windows.  Newly received messages will automatically appear within SMS View.  Outgoing messages will not appear in SMS View until they are successfully transmitted.  The application runs in an infinite loop and is considered stable.  Data is saved to the database "on the fly" so even if execution is halted...  The chat history and selected station identifier remain.
 
+To start over, simply delete the lora_chat.db file.  If you only want to clear the chat history, run sms_clear.py (preferably while sms_view.py is not running).
+
 ## Developed By
 
 * **Chris Clement (K7CTC)** - [https://qrz.com/db/K7CTC](https://qrz.com/db/K7CTC)
