@@ -22,9 +22,11 @@ import time
 
 #establish and parse command line arguments
 parser = argparse.ArgumentParser(description='LoRa Chat - New SMS',
-                                 epilog='Created by K7CTC. This module validates a user provided message of up to 50 '
-                                        'characters. An SMS packet type identifier is appended and the resulting data '
-                                        'is inserted into a new row within the sms table of lora_chat.db.')
+                                 epilog='Created by K7CTC. This module validates a user provided '
+                                        'message of up to 50 characters. An SMS packet type '
+                                        'identifier is appended and the resulting data is '
+                                        'inserted into a new row within the sms table of '
+                                        'lora_chat.db.')
 parser.add_argument('-m', '--message', nargs='?', default=None,
                     help='message of up to 50 characters in length to be queued for transmission')
 

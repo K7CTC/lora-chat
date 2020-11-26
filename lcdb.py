@@ -16,7 +16,7 @@ import sqlite3
 import time
 from pathlib import Path
 
-#this module should not be executed directly
+#this module is not intended for direct execution
 if __name__ == '__main__':
     print('ERROR: lcdb.py is not intended for direct execution!')
 

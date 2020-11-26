@@ -3,8 +3,8 @@
 #          NAME:  LoRa Chat - Clear SMS Table                          #
 #  DEVELOPED BY:  Chris Clement (K7CTC)                                #
 #       VERSION:  v1.0                                                 #
-#   DESCRIPTION:  This module simply drops and recreates the sms       #
-#                 table from lora_chat.db thus purging chat history.   #
+#   DESCRIPTION:  This module drops and recreates the sms table from   #
+#                 lora_chat.db thus purging chat history.              #
 #                                                                      #
 ########################################################################
 

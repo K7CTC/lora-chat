@@ -65,7 +65,7 @@ args.wdt = args.wdt * 1000
 version = 'v1.0'
 
 #start logger
-logging.info('-------------------------------------------------------------------------------')
+logging.info('----------------------------------------------------------------------')
 logging.info('lostik.py %s started', version)
 
 #verify existence of lora_chat.db before proceeding

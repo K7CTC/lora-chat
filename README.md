@@ -1,8 +1,6 @@
 # LoRa Chat
 
-LoRa Chat is an experimental SMS (Short Message Service) application that utilizes the LoRa RF modulation scheme to send and receive undirected messages of 50 characters or less.  The application is 100% scratch built in Python 3 and is cross-platform.  LoRa Chat has been tested on macOS Big Sur, Windows 10 as well as Raspberry Pi OS.  All modules have been tested with Python v3.7.3 and Python v3.9.  
-
-LoRa Chat is also my first Python project and has served as a motivating factor for learning the language.
+LoRa Chat is an experimental SMS (Short Message Service) application that utilizes the LoRa RF modulation scheme to send and receive undirected plaintext messages of 50 characters or less.  The application is 100% scratch built in Python 3 and is cross-platform.  LoRa Chat has been tested on macOS Big Sur, Windows 10 as well as Raspberry Pi OS.  All modules have been tested with Python v3.7.3 and Python v3.9.  
 
 ## Required Hardware
 
@@ -26,7 +24,7 @@ Ronoth ships the LoStik with a 915MHz stubby antenna, the kind you expect to see
 
 ## Compatibility
 
-LoRa Chat has been tested with Python v3.7.3 as well as Python v3.9.  At the time of this writing Python v3.9 is the current stable release and Python v3.7.3 is shipped with Raspberry Pi OS v2020-08-20.  The lostik-service module requires pySerial v3.5 (current version).  Previous versions of pySerial (v3.4) do not support macOS Big Sur.  A US variant (915MHz) Ronoth LoStik is also required and can be acquired directly from Ronoth or via Amazon for less than $50 each.  LoRa Chat has been tested with macOS Big Sur v11.0.1, Windows 10 20H2 and Raspberry Pi OS v2020-08-20.
+LoRa Chat has been tested with Python v3.7.3 as well as Python v3.9.  At the time of this writing Python v3.9 is the current stable release and Python v3.7.3 is shipped with Raspberry Pi OS v2020-08-20.  The lostik-service module requires pySerial v3.5 (current version).  Previous versions of pySerial do not support macOS Big Sur.  A US variant (915MHz) Ronoth LoStik is also required and can be acquired directly from Ronoth or via Amazon for less than $50 each.  LoRa Chat has been tested with macOS Big Sur v11.0.1, Windows 10 20H2 and Raspberry Pi OS v2020-08-20.
 
 ## Concepts
 
@@ -70,15 +68,21 @@ This module contains functions for interacting with lora_chat.db, the database t
 
 ### lostik-service.py
 
-This module contains all of the logic for interfacing with the Ronoth LoStik.
+This module contains all of the logic for interfacing with the Ronoth LoStik.  The LoStik Service accepts three optional command line arguments; transmit power, coding rate and watchdog timer time-out.  For additional details on usage please execute with the --help argument.
+
+#### Regarding Transmit Power
+
+I have simplified the transmit power settings for the LoStik by only exposing three options; low, medium and high.  Under normal operation, the LoStik power setting is an integer between 2 and 20 (while omitting a few).  The settings translate to a minimum power of 3dBm (2mW) when set to "2" and a maximum power of 18.5dBm (70.8mW) when set to 20.  The transmit power, in milliwatts for low, medium and high are 5mW, 20mW and 70.8mW respectively.  As always, actual effective radiated power largely depends on your antenna and feedline configuration.
 
 ### nodes.csv
 
 This comma separated values file contains a header row specifying the field names for the node table of the LoRa Chat database.  Remaining rows list the node identifier (integer between 1 and 99) along with the node name.  This file is read by the lcdb.py function when called and lora_chat.db is not found prompting the application to create a new database.  The contents of nodes.csv are populated into a database table named "nodes" for use elsewhere within the application.
 
+This file is intended to be edited directly in any suitable plaintext editor.  The version provided by this project is simply a template.  Feel free to provide your own friendly node names.
+
 ### requirements.txt
 
-This file is used by the pip package manager to install application dependencies.  Currently the only dependency is pySerial v1.5 or above.
+This file is used by the pip package manager to install application dependencies.  Currently the only dependency is pySerial v3.5 or above.
 
 ### sms_clear.py
 
@@ -115,6 +119,10 @@ The LoStik Service runs in an infinite loop based on the hardware Watchdog Timer
 Simply leave all three programs running in their terminal windows.  Newly received messages will automatically appear within SMS View.  Outgoing messages will not appear in SMS View until they are successfully transmitted.  The application runs in an infinite loop and is considered stable.  Data is saved to the database "on the fly" so even if execution is halted...  The chat history and selected station identifier remain.
 
 To start over, simply delete the lora_chat.db file.  If you only want to clear the chat history, run sms_clear.py (preferably while sms_view.py is not running).
+
+## Final Thoughts
+
+I have successfully tested round trip message transmission over a signal path of 13.5mi with both nodes running at high power.  In the future, I plan additional tests to see if I can exceed a 16mi signal path.  LoRa is an incredible modulation scheme when you consider this is accomplished with less than 100mW.
 
 ## Developed By
 
